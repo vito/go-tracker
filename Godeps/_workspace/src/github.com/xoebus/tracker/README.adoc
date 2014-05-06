@@ -1,3 +1,0 @@
-= Tracker
-
-A Pivotal Tracker API client written in Go
