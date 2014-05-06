@@ -9,7 +9,7 @@ import (
 
 	"github.com/onsi/gomega/ghttp"
 
-	"github.com/xoebus/tracker"
+	"github.com/xoebus/go-tracker"
 )
 
 func Fixture(filename string) string {
