@@ -41,7 +41,6 @@ func (c Client) Me() (Me, error) {
 	if err != nil {
 		return me, err
 	}
-	defer response.Body.Close()
 
 	if err := c.decodeResponse(response, &me); err != nil {
 		return me, err
@@ -80,6 +79,11 @@ func (c Client) sendRequest(request *http.Request) (*http.Response, error) {
 func (c Client) decodeResponse(response *http.Response, object interface{}) error {
 	if err := json.NewDecoder(response.Body).Decode(object); err != nil {
 		return fmt.Errorf("invalid json response: %s", err)
+	}
+
+	err := response.Body.Close()
+	if err != nil {
+		return fmt.Errorf("error closing response body: %s", err)
 	}
 
 	return nil
