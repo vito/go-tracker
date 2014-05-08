@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+ginkgo -r -succinct -cover -race -failOnPending
+errcheck -blank
