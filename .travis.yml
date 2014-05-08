@@ -19,7 +19,7 @@ install:
 - go get code.google.com/p/go.tools/cmd/cover
 - go install github.com/onsi/ginkgo/ginkgo
 
-script: ./scripts/test
+script: ./scripts/ci
 
 after_success:
 - 'echo "mode: set" > all.coverprofile'
