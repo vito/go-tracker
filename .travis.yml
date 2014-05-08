@@ -1,0 +1,18 @@
+language: go
+
+go:
+- 1.2
+- tip
+
+before_install:
+- export PATH=$HOME/gopath/bin:$PATH
+- export PATH=$PWD/Godeps/_workspace/bin:$PATH
+- export GOPATH=$PWD/Godeps/_workspace:$GOPATH
+
+install:
+- go get -v github.com/kisielk/errcheck
+- go get -v github.com/mattn/goveralls
+- go get code.google.com/p/go.tools/cmd/cover
+- go install github.com/onsi/ginkgo/ginkgo
+
+script: ./scripts/test
