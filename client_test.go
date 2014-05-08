@@ -1,9 +1,7 @@
 package tracker_test
 
 import (
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -11,16 +9,6 @@ import (
 
 	"github.com/xoebus/go-tracker"
 )
-
-func Fixture(filename string) string {
-	path := filepath.Join("fixtures", filename)
-	contents, err := ioutil.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(contents)
-}
 
 var _ = Describe("Tracker Client", func() {
 	var (
