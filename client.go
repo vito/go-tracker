@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/xoebus/go-tracker/resources"
 )
 
 var DefaultURL = "https://www.pivotaltracker.com"
@@ -14,14 +16,6 @@ type Client struct {
 	token  string
 }
 
-type Me struct {
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Initials string `json:"initials"`
-	ID       int    `json:"id"`
-	Email    string `json:"email"`
-}
-
 func NewClient(token string) *Client {
 	return &Client{
 		client: &http.Client{},
@@ -29,10 +23,10 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (c Client) Me() (Me, error) {
-	var me Me
+func (c Client) Me() (resources.Me, error) {
+	var me resources.Me
 
-	request, err := c.createRequest("/services/v5/me")
+	request, err := c.createRequest("/me")
 	if err != nil {
 		return me, err
 	}
@@ -49,8 +43,15 @@ func (c Client) Me() (Me, error) {
 	return me, nil
 }
 
+func (c Client) InProject(projectId int) ProjectClient {
+	return ProjectClient{
+		id:     projectId,
+		client: c,
+	}
+}
+
 func (c Client) createRequest(path string) (*http.Request, error) {
-	request, err := http.NewRequest("GET", DefaultURL+path, nil)
+	request, err := http.NewRequest("GET", DefaultURL+"/services/v5"+path, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %s", err)
 	}

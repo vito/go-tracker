@@ -1,4 +1,4 @@
-package tracker_test
+package resources_test
 
 import (
 	"encoding/json"
@@ -7,12 +7,12 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/xoebus/go-tracker"
+	"github.com/xoebus/go-tracker/resources"
 )
 
 var _ = Describe("Me", func() {
 	It("has attributes", func() {
-		var me tracker.Me
+		var me resources.Me
 		reader := strings.NewReader(Fixture("me.json"))
 		err := json.NewDecoder(reader).Decode(&me)
 		Ω(err).ToNot(HaveOccurred())

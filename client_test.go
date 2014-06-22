@@ -1,9 +1,9 @@
 package tracker_test
 
 import (
-	"net/http"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"net/http"
 
 	"github.com/onsi/gomega/ghttp"
 
@@ -102,6 +102,29 @@ var _ = Describe("Tracker Client", func() {
 
 			Ω(err).To(HaveOccurred())
 			Ω(err.Error()).To(MatchRegexp("invalid json response"))
+		})
+	})
+
+	Describe("listing stories", func() {
+		It("works if everything goes to plan", func() {
+			headers := http.Header{
+				"X-TrackerToken": {"api-token"},
+			}
+
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis&with_state=finished"),
+					ghttp.VerifyHeader(headers),
+
+					ghttp.RespondWith(http.StatusOK, Fixture("stories.json")),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			stories, err := client.InProject(99).Stories()
+			Ω(stories).Should(HaveLen(4))
+			Ω(err).ToNot(HaveOccurred())
 		})
 	})
 })
