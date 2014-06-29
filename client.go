@@ -26,7 +26,7 @@ func NewClient(token string) *Client {
 func (c Client) Me() (resources.Me, error) {
 	var me resources.Me
 
-	request, err := c.createRequest("/me")
+	request, err := c.createRequest("GET", "/me")
 	if err != nil {
 		return me, err
 	}
@@ -50,8 +50,8 @@ func (c Client) InProject(projectId int) ProjectClient {
 	}
 }
 
-func (c Client) createRequest(path string) (*http.Request, error) {
-	request, err := http.NewRequest("GET", DefaultURL+"/services/v5"+path, nil)
+func (c Client) createRequest(method string, path string) (*http.Request, error) {
+	request, err := http.NewRequest(method, DefaultURL+"/services/v5"+path, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %s", err)
 	}

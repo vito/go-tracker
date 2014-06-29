@@ -19,7 +19,20 @@ func main() {
 		log.Fatalf("could not get current tracker user: %s", err)
 	}
 
-	fmt.Printf("%+v", me)
+	fmt.Printf("%+v\n", me)
+
+	stories, err := client.InProject(1059262).Stories()
+	if err != nil {
+		log.Fatalf("could not get stories: %s", err)
+	}
+
+	fmt.Printf("%+v\n", stories)
+
+	story := stories[0]
+	err = client.InProject(1059262).DeliverStory(story.ID)
+	if err != nil {
+		log.Fatalf("could not deliver story: %s", err)
+	}
 }
 
 func readToken() string {

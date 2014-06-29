@@ -1,3 +1,6 @@
 package resources
 
-type Story struct{}
+type Story struct {
+	Name string `json:"name"`
+	ID   int    `json:"id"`
+}
