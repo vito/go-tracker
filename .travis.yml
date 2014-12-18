@@ -1,8 +1,7 @@
 language: go
 
 go:
-- 1.2
-- tip
+- 1.4
 
 env:
   global:
@@ -14,10 +13,10 @@ before_install:
 - export GOPATH=$PWD/Godeps/_workspace:$GOPATH
 
 install:
-- go get -v github.com/kisielk/errcheck
-- go get code.google.com/p/go.tools/cmd/vet
+- go get github.com/kisielk/errcheck
 - go get -v github.com/mattn/goveralls
-- go get code.google.com/p/go.tools/cmd/cover
+- go get golang.org/x/tools/cmd/vet
+- go get golang.org/x/tools/cmd/cover
 - go install github.com/onsi/ginkgo/ginkgo
 
 script: ./scripts/ci
