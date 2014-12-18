@@ -64,10 +64,5 @@ func (c connection) decodeResponse(response *http.Response, object interface{}) 
 		return fmt.Errorf("invalid json response: %s", err)
 	}
 
-	err := response.Body.Close()
-	if err != nil {
-		return fmt.Errorf("error closing response body: %s", err)
-	}
-
-	return nil
+	return response.Body.Close()
 }
