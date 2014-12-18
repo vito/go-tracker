@@ -12,46 +12,46 @@ import (
 var DefaultURL = "https://www.pivotaltracker.com"
 
 type Client struct {
-	client *http.Client
-	token  string
+	conn connection
 }
 
 func NewClient(token string) *Client {
 	return &Client{
-		client: &http.Client{},
-		token:  token,
+		conn: newConnection(token),
 	}
 }
 
 func (c Client) Me() (me resources.Me, err error) {
-	request, err := c.createRequest("GET", "/me")
+	request, err := c.conn.CreateRequest("GET", "/me")
 	if err != nil {
 		return me, err
 	}
 
-	err = c.do(request, &me)
+	err = c.conn.Do(request, &me)
 
 	return me, err
 }
 
 func (c Client) InProject(projectId int) ProjectClient {
 	return ProjectClient{
-		id:     projectId,
-		client: c,
+		id:   projectId,
+		conn: c.conn,
 	}
 }
 
-func (c Client) createRequest(method string, path string) (*http.Request, error) {
-	request, err := http.NewRequest(method, DefaultURL+"/services/v5"+path, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %s", err)
-	}
-	request.Header.Add("X-TrackerToken", c.token)
-
-	return request, nil
+type connection struct {
+	token  string
+	client *http.Client
 }
 
-func (c Client) do(request *http.Request, response interface{}) error {
+func newConnection(token string) connection {
+	return connection{
+		token:  token,
+		client: &http.Client{},
+	}
+}
+
+func (c connection) Do(request *http.Request, response interface{}) error {
 	resp, err := c.sendRequest(request)
 	if err != nil {
 		return err
@@ -64,7 +64,17 @@ func (c Client) do(request *http.Request, response interface{}) error {
 	return nil
 }
 
-func (c Client) sendRequest(request *http.Request) (*http.Response, error) {
+func (c connection) CreateRequest(method string, path string) (*http.Request, error) {
+	request, err := http.NewRequest(method, DefaultURL+"/services/v5"+path, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %s", err)
+	}
+	request.Header.Add("X-TrackerToken", c.token)
+
+	return request, nil
+}
+
+func (c connection) sendRequest(request *http.Request) (*http.Response, error) {
 	response, err := c.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make request: %s", err)
@@ -81,7 +91,7 @@ func (c Client) sendRequest(request *http.Request) (*http.Response, error) {
 	return response, nil
 }
 
-func (c Client) decodeResponse(response *http.Response, object interface{}) error {
+func (c connection) decodeResponse(response *http.Response, object interface{}) error {
 	if err := json.NewDecoder(response.Body).Decode(object); err != nil {
 		return fmt.Errorf("invalid json response: %s", err)
 	}

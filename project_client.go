@@ -11,8 +11,8 @@ import (
 )
 
 type ProjectClient struct {
-	id     int
-	client Client
+	id   int
+	conn connection
 }
 
 func (p ProjectClient) Stories() (stories []resources.Story, err error) {
@@ -24,7 +24,7 @@ func (p ProjectClient) Stories() (stories []resources.Story, err error) {
 		return stories, err
 	}
 
-	err = p.client.do(request, &stories)
+	err = p.conn.Do(request, &stories)
 	return stories, err
 }
 
@@ -38,15 +38,10 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 	request.Header.Add("Content-Type", "application/json")
 	request.Body = ioutil.NopCloser(strings.NewReader(`{"current_state":"delivered"}`))
 
-	return p.client.do(request, nil)
+	return p.conn.Do(request, nil)
 }
 
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
-	request, err := p.client.createRequest(method, projectPath)
-	if err != nil {
-		return nil, err
-	}
-
-	return request, nil
+	return p.conn.CreateRequest(method, projectPath)
 }
