@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/xoebus/go-tracker/resources"
@@ -17,7 +18,10 @@ type ProjectClient struct {
 func (p ProjectClient) Stories() ([]resources.Story, error) {
 	var stories []resources.Story
 
-	request, err := p.createRequest("GET", "/stories?date_format=millis&with_state=finished")
+	query := url.Values{}
+	query.Set("date_format", "millis")
+	query.Set("with_state", "finished")
+	request, err := p.createRequest("GET", "/stories?"+query.Encode())
 	if err != nil {
 		return stories, err
 	}
