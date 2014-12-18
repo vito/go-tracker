@@ -15,11 +15,30 @@ type ProjectClient struct {
 	conn connection
 }
 
-func (p ProjectClient) Stories() (stories []resources.Story, err error) {
-	query := url.Values{}
-	query.Set("date_format", "millis")
-	query.Set("with_state", "finished")
-	request, err := p.createRequest("GET", "/stories?"+query.Encode())
+type State string
+
+const (
+	StateFinished = "finished"
+)
+
+type StoriesQuery struct {
+	State State
+}
+
+func (query StoriesQuery) Query() url.Values {
+	params := url.Values{}
+	params.Set("date_format", "millis")
+
+	if query.State != "" {
+		params.Set("with_state", string(query.State))
+	}
+
+	return params
+}
+
+func (p ProjectClient) Stories(query StoriesQuery) (stories []resources.Story, err error) {
+	params := query.Query().Encode()
+	request, err := p.createRequest("GET", "/stories?"+params)
 	if err != nil {
 		return stories, err
 	}

@@ -1,9 +1,10 @@
 package tracker_test
 
 import (
+	"net/http"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"net/http"
 
 	"github.com/onsi/gomega/ghttp"
 
@@ -106,11 +107,28 @@ var _ = Describe("Tracker Client", func() {
 	})
 
 	Describe("listing stories", func() {
-		It("works if everything goes to plan", func() {
-			headers := http.Header{
-				"X-TrackerToken": {"api-token"},
-			}
+		headers := http.Header{
+			"X-TrackerToken": {"api-token"},
+		}
 
+		It("gets all the stories by default", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis"),
+					ghttp.VerifyHeader(headers),
+
+					ghttp.RespondWith(http.StatusOK, Fixture("stories.json")),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			stories, err := client.InProject(99).Stories(tracker.StoriesQuery{})
+			Ω(stories).Should(HaveLen(4))
+			Ω(err).ToNot(HaveOccurred())
+		})
+
+		It("allows different queries to be made", func() {
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
 					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis&with_state=finished"),
@@ -122,7 +140,10 @@ var _ = Describe("Tracker Client", func() {
 
 			client := tracker.NewClient("api-token")
 
-			stories, err := client.InProject(99).Stories()
+			query := tracker.StoriesQuery{
+				State: tracker.StateFinished,
+			}
+			stories, err := client.InProject(99).Stories(query)
 			Ω(stories).Should(HaveLen(4))
 			Ω(err).ToNot(HaveOccurred())
 		})
