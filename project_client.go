@@ -1,7 +1,10 @@
 package tracker
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -37,12 +40,30 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 	return p.conn.Do(request, nil)
 }
 
+func (p ProjectClient) CreateStory(story resources.Story) error {
+	request, err := p.createRequest("POST", "/stories")
+	if err != nil {
+		return err
+	}
+
+	buffer := &bytes.Buffer{}
+	json.NewEncoder(buffer).Encode(story)
+
+	p.addJSONBodyReader(request, buffer)
+
+	return p.conn.Do(request, nil)
+}
+
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
 	return p.conn.CreateRequest(method, projectPath)
 }
 
-func (p ProjectClient) addJSONBody(request *http.Request, body string) {
+func (p ProjectClient) addJSONBodyReader(request *http.Request, body io.Reader) {
 	request.Header.Add("Content-Type", "application/json")
-	request.Body = ioutil.NopCloser(strings.NewReader(body))
+	request.Body = ioutil.NopCloser(body)
+}
+
+func (p ProjectClient) addJSONBody(request *http.Request, body string) {
+	p.addJSONBodyReader(request, strings.NewReader(body))
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/onsi/gomega/ghttp"
 
 	"github.com/xoebus/go-tracker"
+	"github.com/xoebus/go-tracker/resources"
 )
 
 var _ = Describe("Tracker Client", func() {
@@ -158,6 +159,27 @@ var _ = Describe("Tracker Client", func() {
 			client := tracker.NewClient("api-token")
 
 			err := client.InProject(99).DeliverStory(15225523)
+			Ω(err).ShouldNot(HaveOccurred())
+		})
+	})
+
+	Describe("creating a story", func() {
+		It("POSTs", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("POST", "/services/v5/projects/99/stories"),
+					ghttp.VerifyJSON(`{"name":"Exhaust ports are ray shielded"}`),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			err := client.InProject(99).CreateStory(resources.Story{
+				Name: "Exhaust ports are ray shielded",
+			})
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 	})
