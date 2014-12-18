@@ -23,24 +23,15 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (c Client) Me() (resources.Me, error) {
-	var me resources.Me
-
+func (c Client) Me() (me resources.Me, err error) {
 	request, err := c.createRequest("GET", "/me")
 	if err != nil {
 		return me, err
 	}
 
-	response, err := c.sendRequest(request)
-	if err != nil {
-		return me, err
-	}
+	err = c.do(request, &me)
 
-	if err := c.decodeResponse(response, &me); err != nil {
-		return me, err
-	}
-
-	return me, nil
+	return me, err
 }
 
 func (c Client) InProject(projectId int) ProjectClient {
@@ -58,6 +49,19 @@ func (c Client) createRequest(method string, path string) (*http.Request, error)
 	request.Header.Add("X-TrackerToken", c.token)
 
 	return request, nil
+}
+
+func (c Client) do(request *http.Request, response interface{}) error {
+	resp, err := c.sendRequest(request)
+	if err != nil {
+		return err
+	}
+
+	if response != nil {
+		return c.decodeResponse(resp, response)
+	}
+
+	return nil
 }
 
 func (c Client) sendRequest(request *http.Request) (*http.Response, error) {

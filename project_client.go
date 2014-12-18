@@ -15,9 +15,7 @@ type ProjectClient struct {
 	client Client
 }
 
-func (p ProjectClient) Stories() ([]resources.Story, error) {
-	var stories []resources.Story
-
+func (p ProjectClient) Stories() (stories []resources.Story, err error) {
 	query := url.Values{}
 	query.Set("date_format", "millis")
 	query.Set("with_state", "finished")
@@ -26,16 +24,8 @@ func (p ProjectClient) Stories() ([]resources.Story, error) {
 		return stories, err
 	}
 
-	response, err := p.client.sendRequest(request)
-	if err != nil {
-		return stories, err
-	}
-
-	if err := p.client.decodeResponse(response, &stories); err != nil {
-		return stories, err
-	}
-
-	return stories, nil
+	err = p.client.do(request, &stories)
+	return stories, err
 }
 
 func (p ProjectClient) DeliverStory(storyId int) error {
@@ -48,12 +38,7 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 	request.Header.Add("Content-Type", "application/json")
 	request.Body = ioutil.NopCloser(strings.NewReader(`{"current_state":"delivered"}`))
 
-	_, err = p.client.sendRequest(request)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return p.client.do(request, nil)
 }
 
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
