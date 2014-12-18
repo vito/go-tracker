@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/xoebus/go-tracker/resources"
@@ -13,33 +12,6 @@ import (
 type ProjectClient struct {
 	id   int
 	conn connection
-}
-
-type State string
-
-const (
-	StateUnscheduled = "unscheduled"
-	StatePlanned     = "planned"
-	StateStarted     = "started"
-	StateFinished    = "finished"
-	StateDelivered   = "delivered"
-	StateAccepted    = "accepted"
-	StateRejected    = "rejected"
-)
-
-type StoriesQuery struct {
-	State State
-}
-
-func (query StoriesQuery) Query() url.Values {
-	params := url.Values{}
-	params.Set("date_format", "millis")
-
-	if query.State != "" {
-		params.Set("with_state", string(query.State))
-	}
-
-	return params
 }
 
 func (p ProjectClient) Stories(query StoriesQuery) (stories []resources.Story, err error) {
