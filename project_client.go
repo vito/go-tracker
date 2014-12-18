@@ -18,7 +18,13 @@ type ProjectClient struct {
 type State string
 
 const (
-	StateFinished = "finished"
+	StateUnscheduled = "unscheduled"
+	StatePlanned     = "planned"
+	StateStarted     = "started"
+	StateFinished    = "finished"
+	StateDelivered   = "delivered"
+	StateAccepted    = "accepted"
+	StateRejected    = "rejected"
 )
 
 type StoriesQuery struct {
