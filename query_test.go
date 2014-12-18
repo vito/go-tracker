@@ -23,5 +23,19 @@ var _ = Describe("Queries", func() {
 			}
 			Ω(queryString(query)).Should(Equal("date_format=millis&with_state=rejected"))
 		})
+
+		It("can query by story labels", func() {
+			query := tracker.StoriesQuery{
+				Label: "blocked",
+			}
+			Ω(queryString(query)).Should(Equal("date_format=millis&with_label=blocked"))
+		})
+
+		It("can limit the numer of results", func() {
+			query := tracker.StoriesQuery{
+				Limit: 33,
+			}
+			Ω(queryString(query)).Should(Equal("date_format=millis&limit=33"))
+		})
 	})
 })
