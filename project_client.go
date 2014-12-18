@@ -35,8 +35,7 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 		return err
 	}
 
-	request.Header.Add("Content-Type", "application/json")
-	request.Body = ioutil.NopCloser(strings.NewReader(`{"current_state":"delivered"}`))
+	p.addJSONBody(request, `{"current_state":"delivered"}`)
 
 	return p.conn.Do(request, nil)
 }
@@ -44,4 +43,9 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
 	return p.conn.CreateRequest(method, projectPath)
+}
+
+func (p ProjectClient) addJSONBody(request *http.Request, body string) {
+	request.Header.Add("Content-Type", "application/json")
+	request.Body = ioutil.NopCloser(strings.NewReader(body))
 }
