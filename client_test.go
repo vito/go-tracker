@@ -9,7 +9,6 @@ import (
 	"github.com/onsi/gomega/ghttp"
 
 	"github.com/xoebus/go-tracker"
-	"github.com/xoebus/go-tracker/resources"
 )
 
 var _ = Describe("Tracker Client", func() {
@@ -136,7 +135,7 @@ var _ = Describe("Tracker Client", func() {
 			client := tracker.NewClient("api-token")
 
 			query := tracker.StoriesQuery{
-				State: tracker.StateFinished,
+				State: tracker.StoryStateFinished,
 			}
 			stories, err := client.InProject(99).Stories(query)
 			Ω(stories).Should(HaveLen(4))
@@ -177,7 +176,7 @@ var _ = Describe("Tracker Client", func() {
 
 			client := tracker.NewClient("api-token")
 
-			err := client.InProject(99).CreateStory(resources.Story{
+			err := client.InProject(99).CreateStory(tracker.Story{
 				Name: "Exhaust ports are ray shielded",
 			})
 			Ω(err).ShouldNot(HaveOccurred())

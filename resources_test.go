@@ -1,4 +1,4 @@
-package resources_test
+package tracker_test
 
 import (
 	"encoding/json"
@@ -7,12 +7,12 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/xoebus/go-tracker/resources"
+	"github.com/xoebus/go-tracker"
 )
 
 var _ = Describe("Me", func() {
 	It("has attributes", func() {
-		var me resources.Me
+		var me tracker.Me
 		reader := strings.NewReader(Fixture("me.json"))
 		err := json.NewDecoder(reader).Decode(&me)
 		Ω(err).ToNot(HaveOccurred())
@@ -22,5 +22,18 @@ var _ = Describe("Me", func() {
 		Ω(me.Initials).To(Equal("DV"))
 		Ω(me.ID).To(Equal(101))
 		Ω(me.Email).To(Equal("vader@deathstar.mil"))
+	})
+})
+
+var _ = Describe("Story", func() {
+	It("has attributes", func() {
+		var stories []tracker.Story
+		reader := strings.NewReader(Fixture("stories.json"))
+		err := json.NewDecoder(reader).Decode(&stories)
+		Ω(err).ToNot(HaveOccurred())
+		story := stories[0]
+
+		Ω(story.ID).Should(Equal(560))
+		Ω(story.Name).Should(Equal("Tractor beam loses power intermittently"))
 	})
 })

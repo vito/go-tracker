@@ -19,7 +19,7 @@ var _ = Describe("Queries", func() {
 
 		It("can query by story state", func() {
 			query := tracker.StoriesQuery{
-				State: tracker.StateRejected,
+				State: tracker.StoryStateRejected,
 			}
 			Ω(queryString(query)).Should(Equal("date_format=millis&with_state=rejected"))
 		})

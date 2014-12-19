@@ -10,7 +10,7 @@ type Query interface {
 }
 
 type StoriesQuery struct {
-	State State
+	State StoryState
 	Label string
 
 	Limit int

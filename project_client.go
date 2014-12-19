@@ -8,8 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-
-	"github.com/xoebus/go-tracker/resources"
 )
 
 type ProjectClient struct {
@@ -17,7 +15,7 @@ type ProjectClient struct {
 	conn connection
 }
 
-func (p ProjectClient) Stories(query StoriesQuery) (stories []resources.Story, err error) {
+func (p ProjectClient) Stories(query StoriesQuery) (stories []Story, err error) {
 	params := query.Query().Encode()
 	request, err := p.createRequest("GET", "/stories?"+params)
 	if err != nil {
@@ -40,7 +38,7 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 	return p.conn.Do(request, nil)
 }
 
-func (p ProjectClient) CreateStory(story resources.Story) error {
+func (p ProjectClient) CreateStory(story Story) error {
 	request, err := p.createRequest("POST", "/stories")
 	if err != nil {
 		return err
