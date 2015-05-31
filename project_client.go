@@ -26,6 +26,18 @@ func (p ProjectClient) Stories(query StoriesQuery) (stories []Story, err error) 
 	return stories, err
 }
 
+func (p ProjectClient) StoryActivity(storyId int, query ActivityQuery) (activities []Activity, err error) {
+	url := fmt.Sprintf("/stories/%d/activity", storyId)
+	params := query.Query().Encode()
+	request, err := p.createRequest("GET", url+"?"+params)
+	if err != nil {
+		return activities, err
+	}
+
+	err = p.conn.Do(request, &activities)
+	return activities, err
+}
+
 func (p ProjectClient) DeliverStory(storyId int) error {
 	url := fmt.Sprintf("/stories/%d", storyId)
 	request, err := p.createRequest("PUT", url)
