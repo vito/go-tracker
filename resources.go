@@ -42,3 +42,16 @@ const (
 	StoryStateAccepted    = "accepted"
 	StoryStateRejected    = "rejected"
 )
+
+type Activity struct {
+	Kind             string        `json:"kind"`
+	GUID             string        `json:"guid"`
+	ProjectVersion   int           `json:"project_version"`
+	Message          string        `json:"message"`
+	Highlight        string        `json:"highlight"`
+	Changes          []interface{} `json:"changes"`
+	PrimaryResources []interface{} `json:"primary_resources"`
+	Project          interface{}   `json:"project"`
+	PerformedBy      interface{}   `json:"performed_by"`
+	OccurredAt       int64         `json:"occurred_at"`
+}

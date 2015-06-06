@@ -37,3 +37,16 @@ var _ = Describe("Story", func() {
 		Ω(story.Name).Should(Equal("Tractor beam loses power intermittently"))
 	})
 })
+
+var _ = Describe("Activity", func() {
+	It("has attributes", func() {
+		var activities []tracker.Activity
+		reader := strings.NewReader(Fixture("activities.json"))
+		err := json.NewDecoder(reader).Decode(&activities)
+		Ω(err).ToNot(HaveOccurred())
+		activity := activities[0]
+
+		Ω(activity.GUID).Should(Equal("99_45"))
+		Ω(activity.Message).Should(Equal("Darth Vader started this feature"))
+	})
+})
