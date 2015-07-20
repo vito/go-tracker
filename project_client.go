@@ -15,15 +15,21 @@ type ProjectClient struct {
 	conn connection
 }
 
-func (p ProjectClient) Stories(query StoriesQuery) (stories []Story, err error) {
+func (p ProjectClient) Stories(query StoriesQuery) ([]Story, Pagination, error) {
 	params := query.Query().Encode()
+
 	request, err := p.createRequest("GET", "/stories?"+params)
 	if err != nil {
-		return stories, err
+		return nil, Pagination{}, err
 	}
 
-	err = p.conn.Do(request, &stories)
-	return stories, err
+	var stories []Story
+	pagination, err := p.conn.Do(request, &stories)
+	if err != nil {
+		return nil, Pagination{}, err
+	}
+
+	return stories, pagination, err
 }
 
 func (p ProjectClient) StoryActivity(storyId int, query ActivityQuery) (activities []Activity, err error) {
@@ -34,7 +40,7 @@ func (p ProjectClient) StoryActivity(storyId int, query ActivityQuery) (activiti
 		return activities, err
 	}
 
-	err = p.conn.Do(request, &activities)
+	_, err = p.conn.Do(request, &activities)
 	return activities, err
 }
 
@@ -47,7 +53,8 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 
 	p.addJSONBody(request, `{"current_state":"delivered"}`)
 
-	return p.conn.Do(request, nil)
+	_, err = p.conn.Do(request, nil)
+	return err
 }
 
 func (p ProjectClient) CreateStory(story Story) error {
@@ -61,7 +68,8 @@ func (p ProjectClient) CreateStory(story Story) error {
 
 	p.addJSONBodyReader(request, buffer)
 
-	return p.conn.Do(request, nil)
+	_, err = p.conn.Do(request, nil)
+	return err
 }
 
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {

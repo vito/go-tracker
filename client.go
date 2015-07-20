@@ -18,7 +18,7 @@ func (c Client) Me() (me Me, err error) {
 		return me, err
 	}
 
-	err = c.conn.Do(request, &me)
+	_, err = c.conn.Do(request, &me)
 
 	return me, err
 }
