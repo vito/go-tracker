@@ -15,6 +15,8 @@
        ],
        "labels":
        [
+         { "id": 10, "project_id": 99, "name": "some-label" },
+         { "id": 11, "project_id": 99, "name": "some-other-label" }
        ]
    },
    {

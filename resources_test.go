@@ -35,6 +35,10 @@ var _ = Describe("Story", func() {
 
 		Ω(story.ID).Should(Equal(560))
 		Ω(story.Name).Should(Equal("Tractor beam loses power intermittently"))
+		Ω(story.Labels).Should(Equal([]tracker.Label{
+			{ID: 10, ProjectID: 99, Name: "some-label"},
+			{ID: 11, ProjectID: 99, Name: "some-other-label"},
+		}))
 	})
 })
 
