@@ -268,15 +268,28 @@ var _ = Describe("Tracker Client", func() {
 					ghttp.VerifyJSON(`{"name":"Exhaust ports are ray shielded"}`),
 					verifyTrackerToken(),
 
-					ghttp.RespondWith(http.StatusOK, ""),
+					ghttp.RespondWith(http.StatusOK, `{
+						"id": 1234,
+						"project_id": 5678,
+						"name": "Exhaust ports are ray shielded",
+						"url": "https://some-url.biz/1234"
+					}`),
 				),
 			)
 
 			client := tracker.NewClient("api-token")
 
-			err := client.InProject(99).CreateStory(tracker.Story{
+			story, err := client.InProject(99).CreateStory(tracker.Story{
 				Name: "Exhaust ports are ray shielded",
 			})
+			Ω(story).Should(Equal(tracker.Story{
+				ID:        1234,
+				ProjectID: 5678,
+
+				Name: "Exhaust ports are ray shielded",
+
+				URL: "https://some-url.biz/1234",
+			}))
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 	})

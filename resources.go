@@ -16,6 +16,8 @@ type Story struct {
 	ID        int `json:"id,omitempty"`
 	ProjectID int `json:"project_id,omitempty"`
 
+	URL string `json:"url,omitempty"`
+
 	Name        string     `json:"name,omitempty"`
 	Description string     `json:"description,omitempty"`
 	Type        StoryType  `json:"story_type,omitempty"`

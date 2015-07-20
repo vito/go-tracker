@@ -57,10 +57,10 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 	return err
 }
 
-func (p ProjectClient) CreateStory(story Story) error {
+func (p ProjectClient) CreateStory(story Story) (Story, error) {
 	request, err := p.createRequest("POST", "/stories")
 	if err != nil {
-		return err
+		return Story{}, err
 	}
 
 	buffer := &bytes.Buffer{}
@@ -68,8 +68,9 @@ func (p ProjectClient) CreateStory(story Story) error {
 
 	p.addJSONBodyReader(request, buffer)
 
-	_, err = p.conn.Do(request, nil)
-	return err
+	var createdStory Story
+	_, err = p.conn.Do(request, &createdStory)
+	return createdStory, err
 }
 
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
