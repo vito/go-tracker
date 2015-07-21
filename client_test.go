@@ -108,7 +108,7 @@ var _ = Describe("Tracker Client", func() {
 		It("gets all the stories by default", func() {
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
-					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis"),
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories"),
 					verifyTrackerToken(),
 
 					ghttp.RespondWith(http.StatusOK, Fixture("stories.json")),
@@ -126,7 +126,7 @@ var _ = Describe("Tracker Client", func() {
 		It("returns pagination info allowing the caller to follow through pages themselves", func() {
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
-					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis"),
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories"),
 					verifyTrackerToken(),
 
 					ghttp.RespondWith(http.StatusOK, Fixture("stories.json"), http.Header{
@@ -137,7 +137,7 @@ var _ = Describe("Tracker Client", func() {
 					}),
 				),
 				ghttp.CombineHandlers(
-					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis&offset=1234"),
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "offset=1234"),
 					verifyTrackerToken(),
 
 					ghttp.RespondWith(http.StatusOK, Fixture("stories.json"), http.Header{
@@ -175,7 +175,7 @@ var _ = Describe("Tracker Client", func() {
 		It("allows different queries to be made", func() {
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
-					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis&with_state=finished"),
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "with_state=finished"),
 					verifyTrackerToken(),
 
 					ghttp.RespondWith(http.StatusOK, Fixture("stories.json")),
@@ -198,7 +198,7 @@ var _ = Describe("Tracker Client", func() {
 		It("gets the story's activity", func() {
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
-					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories/560/activity", "date_format=millis"),
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories/560/activity"),
 					verifyTrackerToken(),
 
 					ghttp.RespondWith(http.StatusOK, Fixture("activities.json")),
@@ -218,7 +218,7 @@ var _ = Describe("Tracker Client", func() {
 					ghttp.VerifyRequest(
 						"GET",
 						"/services/v5/projects/99/stories/560/activity",
-						"date_format=millis&limit=2&occurred_after=1000000000000&occurred_before=1433091819000&offset=1&since_version=1",
+						"limit=2&occurred_after=1000000000000&occurred_before=1433091819000&offset=1&since_version=1",
 					),
 					verifyTrackerToken(),
 

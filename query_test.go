@@ -14,28 +14,28 @@ var _ = Describe("Queries", func() {
 	Describe("StoriesQuery", func() {
 		It("only has date_format by default", func() {
 			query := tracker.StoriesQuery{}
-			Ω(queryString(query)).Should(Equal("date_format=millis"))
+			Ω(queryString(query)).Should(Equal(""))
 		})
 
 		It("can query by story state", func() {
 			query := tracker.StoriesQuery{
 				State: tracker.StoryStateRejected,
 			}
-			Ω(queryString(query)).Should(Equal("date_format=millis&with_state=rejected"))
+			Ω(queryString(query)).Should(Equal("with_state=rejected"))
 		})
 
 		It("can query by story labels", func() {
 			query := tracker.StoriesQuery{
 				Label: "blocked",
 			}
-			Ω(queryString(query)).Should(Equal("date_format=millis&with_label=blocked"))
+			Ω(queryString(query)).Should(Equal("with_label=blocked"))
 		})
 
 		It("can limit the numer of results", func() {
 			query := tracker.StoriesQuery{
 				Limit: 33,
 			}
-			Ω(queryString(query)).Should(Equal("date_format=millis&limit=33"))
+			Ω(queryString(query)).Should(Equal("limit=33"))
 		})
 	})
 })
