@@ -1,5 +1,7 @@
 package tracker
 
+import "time"
+
 type Me struct {
 	Username string `json:"username"`
 	Name     string `json:"name"`
@@ -24,6 +26,10 @@ type Story struct {
 	State       StoryState `json:"current_state,omitempty"`
 
 	Labels []Label `json:"labels,omitempty"`
+
+	CreatedAt  *time.Time `json:"created_at,omitempty"`
+	UpdatedAt  *time.Time `json:"updated_at,omitempty"`
+	AcceptedAt *time.Time `json:"accepted_at,omitempty"`
 }
 
 type Label struct {

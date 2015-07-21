@@ -3,6 +3,7 @@ package tracker_test
 import (
 	"encoding/json"
 	"strings"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -39,6 +40,9 @@ var _ = Describe("Story", func() {
 			{ID: 10, ProjectID: 99, Name: "some-label"},
 			{ID: 11, ProjectID: 99, Name: "some-other-label"},
 		}))
+		Ω(*story.CreatedAt).Should(Equal(time.Date(2015, 07, 20, 22, 50, 50, 0, time.UTC)))
+		Ω(*story.UpdatedAt).Should(Equal(time.Date(2015, 07, 20, 22, 51, 50, 0, time.UTC)))
+		Ω(*story.AcceptedAt).Should(Equal(time.Date(2015, 07, 20, 22, 52, 50, 0, time.UTC)))
 	})
 })
 

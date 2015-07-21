@@ -19,7 +19,6 @@ type StoriesQuery struct {
 
 func (query StoriesQuery) Query() url.Values {
 	params := url.Values{}
-	params.Set("date_format", "millis")
 
 	if query.State != "" {
 		params.Set("with_state", string(query.State))
@@ -50,7 +49,6 @@ type ActivityQuery struct {
 
 func (query ActivityQuery) Query() url.Values {
 	params := url.Values{}
-	params.Set("date_format", "millis")
 
 	if query.Limit != 0 {
 		params.Set("limit", fmt.Sprintf("%d", query.Limit))
