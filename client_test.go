@@ -117,8 +117,58 @@ var _ = Describe("Tracker Client", func() {
 
 			client := tracker.NewClient("api-token")
 
-			stories, err := client.InProject(99).Stories(tracker.StoriesQuery{})
+			stories, pagination, err := client.InProject(99).Stories(tracker.StoriesQuery{})
 			Ω(stories).Should(HaveLen(4))
+			Ω(pagination).Should(BeZero())
+			Ω(err).ToNot(HaveOccurred())
+		})
+
+		It("returns pagination info allowing the caller to follow through pages themselves", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis"),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, Fixture("stories.json"), http.Header{
+						"X-Tracker-Pagination-Total":    []string{"1"},
+						"X-Tracker-Pagination-Offset":   []string{"2"},
+						"X-Tracker-Pagination-Limit":    []string{"3"},
+						"X-Tracker-Pagination-Returned": []string{"4"},
+					}),
+				),
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/stories", "date_format=millis&offset=1234"),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, Fixture("stories.json"), http.Header{
+						"X-Tracker-Pagination-Total":    []string{"5"},
+						"X-Tracker-Pagination-Offset":   []string{"6"},
+						"X-Tracker-Pagination-Limit":    []string{"7"},
+						"X-Tracker-Pagination-Returned": []string{"8"},
+					}),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			stories, pagination, err := client.InProject(99).Stories(tracker.StoriesQuery{})
+			Ω(stories).Should(HaveLen(4))
+			Ω(pagination).Should(Equal(tracker.Pagination{
+				Total:    1,
+				Offset:   2,
+				Limit:    3,
+				Returned: 4,
+			}))
+			Ω(err).ToNot(HaveOccurred())
+
+			stories, pagination, err = client.InProject(99).Stories(tracker.StoriesQuery{Offset: 1234})
+			Ω(stories).Should(HaveLen(4))
+			Ω(pagination).Should(Equal(tracker.Pagination{
+				Total:    5,
+				Offset:   6,
+				Limit:    7,
+				Returned: 8,
+			}))
 			Ω(err).ToNot(HaveOccurred())
 		})
 
@@ -137,8 +187,9 @@ var _ = Describe("Tracker Client", func() {
 			query := tracker.StoriesQuery{
 				State: tracker.StoryStateFinished,
 			}
-			stories, err := client.InProject(99).Stories(query)
+			stories, pagination, err := client.InProject(99).Stories(query)
 			Ω(stories).Should(HaveLen(4))
+			Ω(pagination).Should(BeZero())
 			Ω(err).ToNot(HaveOccurred())
 		})
 	})
@@ -217,15 +268,28 @@ var _ = Describe("Tracker Client", func() {
 					ghttp.VerifyJSON(`{"name":"Exhaust ports are ray shielded"}`),
 					verifyTrackerToken(),
 
-					ghttp.RespondWith(http.StatusOK, ""),
+					ghttp.RespondWith(http.StatusOK, `{
+						"id": 1234,
+						"project_id": 5678,
+						"name": "Exhaust ports are ray shielded",
+						"url": "https://some-url.biz/1234"
+					}`),
 				),
 			)
 
 			client := tracker.NewClient("api-token")
 
-			err := client.InProject(99).CreateStory(tracker.Story{
+			story, err := client.InProject(99).CreateStory(tracker.Story{
 				Name: "Exhaust ports are ray shielded",
 			})
+			Ω(story).Should(Equal(tracker.Story{
+				ID:        1234,
+				ProjectID: 5678,
+
+				Name: "Exhaust ports are ray shielded",
+
+				URL: "https://some-url.biz/1234",
+			}))
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 	})

@@ -13,12 +13,12 @@ type StoriesQuery struct {
 	State StoryState
 	Label string
 
-	Limit int
+	Limit  int
+	Offset int
 }
 
 func (query StoriesQuery) Query() url.Values {
 	params := url.Values{}
-	params.Set("date_format", "millis")
 
 	if query.State != "" {
 		params.Set("with_state", string(query.State))
@@ -30,6 +30,10 @@ func (query StoriesQuery) Query() url.Values {
 
 	if query.Limit != 0 {
 		params.Set("limit", fmt.Sprintf("%d", query.Limit))
+	}
+
+	if query.Offset != 0 {
+		params.Set("offset", fmt.Sprintf("%d", query.Offset))
 	}
 
 	return params
@@ -45,7 +49,6 @@ type ActivityQuery struct {
 
 func (query ActivityQuery) Query() url.Values {
 	params := url.Values{}
-	params.Set("date_format", "millis")
 
 	if query.Limit != 0 {
 		params.Set("limit", fmt.Sprintf("%d", query.Limit))
