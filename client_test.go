@@ -258,6 +258,24 @@ var _ = Describe("Tracker Client", func() {
 			err := client.InProject(99).DeliverStory(15225523)
 			Ω(err).ShouldNot(HaveOccurred())
 		})
+
+		It("HTTP PUTs it in its place with a comment", func() {
+			comment := "some delivery comment"
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("PUT", "/services/v5/projects/99/stories/15225523"),
+					ghttp.VerifyJSON(`{"current_state":"delivered", "comment":"some delivery comment"}`),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			err := client.InProject(99).DeliverStoryWithComment(15225523, comment)
+			Ω(err).ShouldNot(HaveOccurred())
+		})
 	})
 
 	Describe("creating a story", func() {
