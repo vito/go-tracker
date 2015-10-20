@@ -1,6 +1,7 @@
 package tracker_test
 
 import (
+	"errors"
 	"net/http"
 
 	. "github.com/onsi/ginkgo"
@@ -316,6 +317,37 @@ var _ = Describe("Tracker Client", func() {
 				URL: "https://some-url.biz/1234",
 			}))
 			Ω(err).ShouldNot(HaveOccurred())
+		})
+	})
+
+	Describe("deleting a story", func() {
+		It("DELETES", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("DELETE", "/services/v5/projects/99/stories/1234"),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+			client := tracker.NewClient("api-token")
+			err := client.InProject(99).DeleteStory(1234)
+			Ω(err).ShouldNot(HaveOccurred())
+		})
+		Context("when the delete is not successful", func() {
+			It("returns error saying request failed", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.VerifyRequest("DELETE", "/services/v5/projects/99/stories/1234"),
+						verifyTrackerToken(),
+
+						ghttp.RespondWith(http.StatusInternalServerError, ""),
+					),
+				)
+				client := tracker.NewClient("api-token")
+				err := client.InProject(99).DeleteStory(1234)
+				Ω(err).Should(Equal(errors.New("request failed (500)")))
+			})
 		})
 	})
 })
