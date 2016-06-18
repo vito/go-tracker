@@ -350,6 +350,69 @@ var _ = Describe("Tracker Client", func() {
 			})
 		})
 	})
+
+	Describe("adding a label to a story", func() {
+		It("POSTs", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("POST", "/services/v5/projects/99/stories/1234/labels"),
+					ghttp.VerifyJSON(`{"name":"my new label"}`),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, `{
+						"kind": "label",
+						"id": 1234,
+						"project_id": 5678,
+						"name": "my new label",
+						"created_at": "2016-06-18T17:47:13Z",
+						"updated_at": "2016-06-18T17:47:13Z"
+					}`),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			label, err := client.InProject(99).AddStoryLabel(1234, "my new label")
+			Ω(label).Should(Equal(tracker.Label{
+				ID:        1234,
+				ProjectID: 5678,
+
+				Name: "my new label",
+			}))
+			Ω(err).ShouldNot(HaveOccurred())
+		})
+	})
+
+	Describe("removing a label", func() {
+		It("DELETES", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("DELETE", "/services/v5/projects/99/stories/1234/labels/5678"),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+			client := tracker.NewClient("api-token")
+			err := client.InProject(99).RemoveStoryLabel(1234, 5678)
+			Ω(err).ShouldNot(HaveOccurred())
+		})
+		Context("when the delete is not successful", func() {
+			It("returns error saying request failed", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.VerifyRequest("DELETE", "/services/v5/projects/99/stories/1234/labels/5678"),
+						verifyTrackerToken(),
+
+						ghttp.RespondWith(http.StatusInternalServerError, ""),
+					),
+				)
+				client := tracker.NewClient("api-token")
+				err := client.InProject(99).RemoveStoryLabel(1233, 5678)
+				Ω(err).Should(Equal(errors.New("request failed (500)")))
+			})
+		})
+	})
 })
 
 func verifyTrackerToken() http.HandlerFunc {

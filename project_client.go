@@ -107,6 +107,36 @@ func (p ProjectClient) DeleteStory(storyId int) error {
 	return err
 }
 
+func (p ProjectClient) AddStoryLabel(storyId int, label string) (Label, error) {
+	url := fmt.Sprintf("/stories/%d/labels", storyId)
+	request, err := p.createRequest("POST", url)
+	if err != nil {
+		return Label{}, err
+	}
+
+	reqJSON, err := json.Marshal(Label{Name: label})
+	if err != nil {
+		return Label{}, err
+	}
+
+	p.addJSONBody(request, string(reqJSON))
+
+	var createdLabel Label
+	_, err = p.conn.Do(request, &createdLabel)
+	return createdLabel, err
+}
+
+func (p ProjectClient) RemoveStoryLabel(storyId int, labelId int) error {
+	url := fmt.Sprintf("/stories/%d/labels/%d", storyId, labelId)
+	request, err := p.createRequest("DELETE", url)
+	if err != nil {
+		return err
+	}
+
+	_, err = p.conn.Do(request, nil)
+	return err
+}
+
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
 	return p.conn.CreateRequest(method, projectPath)
