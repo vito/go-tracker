@@ -142,6 +142,20 @@ func (p ProjectClient) RemoveStoryLabel(storyId int, labelId int) error {
 	return err
 }
 
+func (p ProjectClient) SetStoryType(storyId int, storyType StoryType) (Story, error) {
+	url := fmt.Sprintf("/stories/%d", storyId)
+	request, err := p.createRequest("PUT", url)
+	if err != nil {
+		return Story{}, err
+	}
+
+	p.addJSONBody(request, fmt.Sprintf(`{"story_type":%q}`, storyType))
+
+	var updatedStory Story
+	_, err = p.conn.Do(request, &updatedStory)
+	return updatedStory, err
+}
+
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
 	return p.conn.CreateRequest(method, projectPath)

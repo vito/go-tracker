@@ -439,6 +439,38 @@ var _ = Describe("Tracker Client", func() {
 			})
 		})
 	})
+
+	Describe("setting a story's type", func() {
+		It("HTTP PUTs it in its place", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("PUT", "/services/v5/projects/99/stories/15225523"),
+					ghttp.VerifyJSON(`{"story_type":"chore"}`),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, `{
+						"id": 1234,
+						"project_id": 5678,
+						"name": "Exhaust ports are ray shielded",
+						"url": "https://some-url.biz/1234"
+					}`),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			story, err := client.InProject(99).SetStoryType(15225523, tracker.StoryTypeChore)
+			Ω(err).ShouldNot(HaveOccurred())
+			Ω(story).Should(Equal(tracker.Story{
+				ID:        1234,
+				ProjectID: 5678,
+
+				Name: "Exhaust ports are ray shielded",
+
+				URL: "https://some-url.biz/1234",
+			}))
+		})
+	})
 })
 
 func verifyTrackerToken() http.HandlerFunc {
