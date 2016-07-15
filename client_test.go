@@ -427,7 +427,7 @@ var _ = Describe("Tracker Client", func() {
 			It("returns error saying request failed", func() {
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
-						ghttp.VerifyRequest("DELETE", "/services/v5/projects/99/stories/1234/labels/5678"),
+						ghttp.VerifyRequest("DELETE", "/services/v5/projects/99/stories/1233/labels/5678"),
 						verifyTrackerToken(),
 
 						ghttp.RespondWith(http.StatusInternalServerError, ""),
