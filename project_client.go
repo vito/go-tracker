@@ -107,7 +107,7 @@ func (p ProjectClient) DeleteStory(storyId int) error {
 	return err
 }
 
-func (p ProjectClient) ProjectMemberShips() ([]ProjectMembership, error) {
+func (p ProjectClient) ProjectMemberships() ([]ProjectMembership, error) {
 	request, err := p.createRequest("GET", "/memberships")
 	if err != nil {
 		return []ProjectMembership{}, err

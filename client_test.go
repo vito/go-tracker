@@ -208,7 +208,7 @@ var _ = Describe("Tracker Client", func() {
 
 			client := tracker.NewClient("api-token")
 
-			memberships, err := client.InProject(99).ProjectMemberShips()
+			memberships, err := client.InProject(99).ProjectMemberships()
 			Ω(memberships).Should(HaveLen(7))
 			Ω(err).ToNot(HaveOccurred())
 		})
