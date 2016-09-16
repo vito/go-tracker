@@ -58,3 +58,20 @@ var _ = Describe("Activity", func() {
 		Ω(activity.Message).Should(Equal("Darth Vader started this feature"))
 	})
 })
+
+var _ = Describe("Project Memberships", func() {
+	It("has attributes", func() {
+		var projectMemberships []tracker.ProjectMembership
+		reader := strings.NewReader(Fixture("project_memberships.json"))
+		err := json.NewDecoder(reader).Decode(&projectMemberships)
+		Ω(err).ToNot(HaveOccurred())
+
+		membership := projectMemberships[0]
+		Ω(membership.ID).Should(Equal(100))
+		Ω(membership.Person.ID).Should(Equal(100))
+		Ω(membership.Person.Name).Should(Equal("Emperor Palpatine"))
+		Ω(membership.Person.Email).Should(Equal("emperor@galacticrepublic.gov"))
+		Ω(membership.Person.Initials).Should(Equal("EP"))
+		Ω(membership.Person.Username).Should(Equal("palpatine"))
+	})
+})
