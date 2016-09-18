@@ -195,6 +195,25 @@ var _ = Describe("Tracker Client", func() {
 		})
 	})
 
+	Describe("listing stories", func() {
+		It("gets all the stories by default", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/services/v5/projects/99/memberships"),
+					verifyTrackerToken(),
+
+					ghttp.RespondWith(http.StatusOK, Fixture("project_memberships.json")),
+				),
+			)
+
+			client := tracker.NewClient("api-token")
+
+			memberships, err := client.InProject(99).ProjectMemberships()
+			Ω(memberships).Should(HaveLen(7))
+			Ω(err).ToNot(HaveOccurred())
+		})
+	})
+
 	Describe("listing a story's activity", func() {
 		It("gets the story's activity", func() {
 			server.AppendHandlers(

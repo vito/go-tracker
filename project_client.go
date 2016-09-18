@@ -107,6 +107,21 @@ func (p ProjectClient) DeleteStory(storyId int) error {
 	return err
 }
 
+func (p ProjectClient) ProjectMemberships() ([]ProjectMembership, error) {
+	request, err := p.createRequest("GET", "/memberships")
+	if err != nil {
+		return []ProjectMembership{}, err
+	}
+
+	var memberships []ProjectMembership
+	_, err = p.conn.Do(request, &memberships)
+	if err != nil {
+		return []ProjectMembership{}, err
+	}
+
+	return memberships, nil
+}
+
 func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
 	return p.conn.CreateRequest(method, projectPath)
