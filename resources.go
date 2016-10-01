@@ -76,7 +76,7 @@ type Activity struct {
 	PrimaryResources []interface{} `json:"primary_resources"`
 	Project          interface{}   `json:"project"`
 	PerformedBy      interface{}   `json:"performed_by"`
-	OccurredAt       int64         `json:"occurred_at"`
+	OccurredAt       time.Time     `json:"occurred_at"`
 }
 
 type ProjectMembership struct {
