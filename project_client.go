@@ -170,6 +170,39 @@ func (p ProjectClient) ProjectMemberships() ([]ProjectMembership, error) {
 	return memberships, nil
 }
 
+func (p ProjectClient) SetStoryName(storyId int, name string) (Story, error) {
+	url := fmt.Sprintf("/stories/%d", storyId)
+	request, err := p.createRequest("PUT", url, nil)
+	if err != nil {
+		return Story{}, err
+	}
+
+	storyPayload := Story{Name: name}
+
+	buffer := &bytes.Buffer{}
+	json.NewEncoder(buffer).Encode(storyPayload)
+
+	p.addJSONBodyReader(request, buffer)
+
+	var updatedStory Story
+	_, err = p.conn.Do(request, &updatedStory)
+	return updatedStory, err
+}
+
+func (p ProjectClient) UnscheduleStory(storyId int) (Story, error) {
+	url := fmt.Sprintf("/stories/%d", storyId)
+	request, err := p.createRequest("PUT", url, nil)
+	if err != nil {
+		return Story{}, err
+	}
+
+	p.addJSONBody(request, `{"current_state":"unscheduled"}`)
+
+	var updatedStory Story
+	_, err = p.conn.Do(request, &updatedStory)
+	return updatedStory, err
+}
+
 func (p ProjectClient) createRequest(method string, path string, params url.Values) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
 	return p.conn.CreateRequest(method, projectPath, params)
