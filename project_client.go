@@ -31,6 +31,21 @@ func (p ProjectClient) Stories(query StoriesQuery) ([]Story, Pagination, error) 
 	return stories, pagination, err
 }
 
+func (p ProjectClient) Labels() ([]Label, error) {
+	request, err := p.createRequest("GET", "/labels?fields=id%2Cproject_id%2Cname%2Ccounts", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var labels []Label
+	_, err = p.conn.Do(request, &labels)
+	if err != nil {
+		return nil, err
+	}
+
+	return labels, err
+}
+
 func (p ProjectClient) StoryActivity(storyId int, query ActivityQuery) (activities []Activity, err error) {
 	url := fmt.Sprintf("/stories/%d/activity", storyId)
 
@@ -102,6 +117,17 @@ func (p ProjectClient) CreateStory(story Story) (Story, error) {
 
 func (p ProjectClient) DeleteStory(storyId int) error {
 	url := fmt.Sprintf("/stories/%d", storyId)
+	request, err := p.createRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = p.conn.Do(request, nil)
+	return err
+}
+
+func (p ProjectClient) DeleteLabel(labelId int) error {
+	url := fmt.Sprintf("/labels/%d", labelId)
 	request, err := p.createRequest("DELETE", url, nil)
 	if err != nil {
 		return err
