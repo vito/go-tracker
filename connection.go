@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -77,11 +78,18 @@ func (c connection) Do(request *http.Request, response interface{}) (Pagination,
 	return pagination, nil
 }
 
-func (c connection) CreateRequest(method string, path string) (*http.Request, error) {
-	request, err := http.NewRequest(method, DefaultURL+"/services/v5"+path, nil)
+func (c connection) CreateRequest(method string, path string, params url.Values) (*http.Request, error) {
+	url := DefaultURL + "/services/v5" + path
+	query := params.Encode()
+	if query != "" {
+		url += "?" + query
+	}
+
+	request, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %s", err)
 	}
+
 	request.Header.Add("X-TrackerToken", c.token)
 
 	return request, nil

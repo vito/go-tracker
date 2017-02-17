@@ -234,7 +234,7 @@
            "name": "Darth Vader",
            "initials": "DV"
        },
-       "occurred_at": 1432641600000
+       "occurred_at": "1368-08-09T00:00:00Z"
    },
    {
        "kind": "story_update_activity",
@@ -575,7 +575,7 @@
            "name": "Darth Vader",
            "initials": "DV"
        },
-       "occurred_at": 1432641600000
+       "occurred_at": "1368-08-09T00:00:00Z"
    },
    {
        "kind": "story_update_activity",
@@ -716,7 +716,7 @@
            "name": "Emperor Palpatine",
            "initials": "EP"
        },
-       "occurred_at": 1432641600000
+       "occurred_at": "1368-08-09T00:00:00Z"
    },
    {
        "kind": "story_create_activity",
@@ -880,6 +880,6 @@
            "name": "Darth Vader",
            "initials": "DV"
        },
-       "occurred_at": 1432641600000
+       "occurred_at": "1368-08-09T00:00:00Z"
    }
 ]

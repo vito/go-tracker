@@ -31,6 +31,27 @@ var _ = Describe("Queries", func() {
 			Ω(queryString(query)).Should(Equal("with_label=blocked"))
 		})
 
+		Describe("query by filter", func() {
+			It("handles a single attribute", func() {
+				query := tracker.StoriesQuery{
+					Filter: []string{
+						"owner:dv",
+					},
+				}
+				Ω(queryString(query)).Should(Equal("filter=owner%3Adv"))
+			})
+
+			It("handles multiple attributes", func() {
+				query := tracker.StoriesQuery{
+					Filter: []string{
+						"owner:dv",
+						"state:started",
+					},
+				}
+				Ω(queryString(query)).Should(Equal("filter=owner%3Adv+state%3Astarted"))
+			})
+		})
+
 		It("can limit the numer of results", func() {
 			query := tracker.StoriesQuery{
 				Limit: 33,
