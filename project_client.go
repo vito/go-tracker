@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -16,9 +17,7 @@ type ProjectClient struct {
 }
 
 func (p ProjectClient) Stories(query StoriesQuery) ([]Story, Pagination, error) {
-	params := query.Query().Encode()
-
-	request, err := p.createRequest("GET", "/stories?"+params)
+	request, err := p.createRequest("GET", "/stories", query.Query())
 	if err != nil {
 		return nil, Pagination{}, err
 	}
@@ -34,8 +33,8 @@ func (p ProjectClient) Stories(query StoriesQuery) ([]Story, Pagination, error) 
 
 func (p ProjectClient) StoryActivity(storyId int, query ActivityQuery) (activities []Activity, err error) {
 	url := fmt.Sprintf("/stories/%d/activity", storyId)
-	params := query.Query().Encode()
-	request, err := p.createRequest("GET", url+"?"+params)
+
+	request, err := p.createRequest("GET", url, query.Query())
 	if err != nil {
 		return activities, err
 	}
@@ -51,7 +50,7 @@ func (p ProjectClient) DeliverStoryWithComment(storyId int, comment string) erro
 	}
 
 	url := fmt.Sprintf("/stories/%d/comments", storyId)
-	request, err := p.createRequest("POST", url)
+	request, err := p.createRequest("POST", url, nil)
 	if err != nil {
 		return err
 	}
@@ -69,7 +68,7 @@ func (p ProjectClient) DeliverStoryWithComment(storyId int, comment string) erro
 
 func (p ProjectClient) DeliverStory(storyId int) error {
 	url := fmt.Sprintf("/stories/%d", storyId)
-	request, err := p.createRequest("PUT", url)
+	request, err := p.createRequest("PUT", url, nil)
 	if err != nil {
 		return err
 	}
@@ -81,7 +80,7 @@ func (p ProjectClient) DeliverStory(storyId int) error {
 }
 
 func (p ProjectClient) CreateStory(story Story) (Story, error) {
-	request, err := p.createRequest("POST", "/stories")
+	request, err := p.createRequest("POST", "/stories", nil)
 	if err != nil {
 		return Story{}, err
 	}
@@ -98,7 +97,7 @@ func (p ProjectClient) CreateStory(story Story) (Story, error) {
 
 func (p ProjectClient) DeleteStory(storyId int) error {
 	url := fmt.Sprintf("/stories/%d", storyId)
-	request, err := p.createRequest("DELETE", url)
+	request, err := p.createRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
@@ -108,7 +107,7 @@ func (p ProjectClient) DeleteStory(storyId int) error {
 }
 
 func (p ProjectClient) ProjectMemberships() ([]ProjectMembership, error) {
-	request, err := p.createRequest("GET", "/memberships")
+	request, err := p.createRequest("GET", "/memberships", nil)
 	if err != nil {
 		return []ProjectMembership{}, err
 	}
@@ -122,9 +121,9 @@ func (p ProjectClient) ProjectMemberships() ([]ProjectMembership, error) {
 	return memberships, nil
 }
 
-func (p ProjectClient) createRequest(method string, path string) (*http.Request, error) {
+func (p ProjectClient) createRequest(method string, path string, params url.Values) (*http.Request, error) {
 	projectPath := fmt.Sprintf("/projects/%d%s", p.id, path)
-	return p.conn.CreateRequest(method, projectPath)
+	return p.conn.CreateRequest(method, projectPath, params)
 }
 
 func (p ProjectClient) addJSONBodyReader(request *http.Request, body io.Reader) {
